@@ -9,8 +9,8 @@ const Home = () => {
   const { addToCart } = useCart();
 
   useEffect(() => {
-    // PEXELS API KEY - REPLACE WITH YOURS
     const PEXELS_API_KEY = 'XscP6Kdamm0Us34Ux0L4v74RxMw6HTJds6n3gxZM2qAfAy5L6x9TiFUs';
+
     
     const productsData = [
       { id: 1, name: 'iPhone 16 Pro', price: 99999, category: 'phone', 
