@@ -1,10 +1,10 @@
 const SummaryApi = {
   categoryWiseProduct: {
-    url: `/api/category-product`,
+    url: `/api/category-wise-product`,
     method: 'post'
   },
   addToCartProductView: {
-    url: `/api/view-cart-product`,
+    url: `/api/get-cart`,
     method: 'get'
   },
   updateCartProduct: {
@@ -13,6 +13,10 @@ const SummaryApi = {
   },
   deleteCartProduct: {
     url: `/api/delete-cart-product`,
+    method: 'post'
+  },
+  signUP: {
+    url: `/api/signup`,  // ← FIXED! Matches backend router.post("/signup")
     method: 'post'
   }
 };

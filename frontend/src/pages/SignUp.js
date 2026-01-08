@@ -37,38 +37,47 @@ export const SignUp = () => {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
+    e.preventDefault();
+    setLoading(true);
 
-        if (data.password !== data.confirmpassword) {
-            toast.error("Passwords don't match!");
-            setLoading(false);
-            return;
+    if (data.password !== data.confirmpassword) {
+        toast.error("Passwords don't match!");
+        setLoading(false);
+        return;
+    }
+
+    // 🔥 SAFETY CHECK - Direct hardcoded URL
+    const API_URL = "http://localhost:5000/api/register"; // CHANGE TO YOUR BACKEND URL
+    const API_METHOD = "POST";
+
+    try {
+        console.log("🌐 Using URL:", API_URL);
+        
+        const response = await fetch("http://localhost:5000/api/signup", {
+            method: API_METHOD,
+            headers: {
+                "content-type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+
+        console.log("📡 Status:", response.status);
+        const responseData = await response.json();
+        console.log("📦 Response:", responseData);
+
+        if (responseData.success) {
+            toast.success("Account created successfully!");
+            navigate("/login");
+        } else {
+            toast.error(responseData.message || "Signup failed");
         }
-
-        try {
-            const response = await fetch(SummaryApi.signUP.url, {
-                method: SummaryApi.signUP.method,
-                headers: {
-                    "content-type": "application/json"
-                },
-                body: JSON.stringify(data)
-            });
-
-            const responseData = await response.json();
-
-            if (responseData.success) {
-                toast.success("Account created successfully!");
-                navigate("/login");
-            } else {
-                toast.error(responseData.message);
-            }
-        } catch (error) {
-            toast.error("Signup failed. Please try again.");
-        } finally {
-            setLoading(false);
-        }
-    };
+    } catch (error) {
+        console.error("💥 Error:", error);
+        toast.error("Backend not running. Check localhost:5000");
+    } finally {
+        setLoading(false);
+    }
+};
 
     return (
         <div style={{
@@ -481,5 +490,6 @@ export const SignUp = () => {
         </div>
     ); 
 };
+
 
 export default SignUp;

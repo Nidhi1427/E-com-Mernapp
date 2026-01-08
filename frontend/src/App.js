@@ -1,7 +1,9 @@
 import React from 'react';
 import { Outlet, Link } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify'; // ✅ ADD THIS
+import 'react-toastify/dist/ReactToastify.css'; // ✅ ADD THIS
 import { useCart } from './context';
-import { FaSearch, FaUser, FaChartBar, FaShoppingCart } from 'react-icons/fa'; // ✅ NEW
+import { FaSearch, FaUser, FaChartBar, FaShoppingCart } from 'react-icons/fa';
 
 const App = () => {
   const { cart, notifications } = useCart();
@@ -28,19 +30,19 @@ const App = () => {
         <div style={{ 
           display: 'flex', gap: '2rem', alignItems: 'center'
         }}>
-          {/* 🔍 → FaSearch */}
+          {/* 🔍 Search */}
           <Link to="/search" title="Search" style={{ 
             color: '#3b82f6', textDecoration: 'none',
             padding: '0.8rem', borderRadius: '50%',
             transition: 'all 0.3s ease', display: 'flex', alignItems: 'center',
-            fontSize: '1.8rem' // Size control
+            fontSize: '1.8rem'
           }}
           onMouseOver={(e) => e.target.style.background = 'rgba(59,130,246,0.2)'}
           onMouseOut={(e) => e.target.style.background = 'transparent'}>
             <FaSearch />
           </Link>
           
-          {/* 👤 → FaUser */}
+          {/* 👤 Login */}
           <Link to="/login" title="Login" style={{ 
             color: '#10b981', textDecoration: 'none',
             padding: '0.8rem', borderRadius: '50%',
@@ -52,7 +54,7 @@ const App = () => {
             <FaUser />
           </Link>
 
-          {/* 📊 → FaChartBar */}
+          {/* 📊 Dashboard */}
           <Link to="/dashboard" title="Dashboard" style={{ 
             color: '#f59e0b', textDecoration: 'none',
             padding: '0.8rem', borderRadius: '50%',
@@ -64,7 +66,7 @@ const App = () => {
             <FaChartBar />
           </Link>
 
-          {/* 🛒 → FaShoppingCart */}
+          {/* 🛒 Cart */}
           <Link to="/cart" title="Cart" style={{ 
             background: '#10b981', padding: '1rem 1.5rem', 
             borderRadius: '2rem', textDecoration: 'none', color: 'white',
@@ -78,29 +80,33 @@ const App = () => {
         </div>
       </header>
 
-      {/* NOTIFICATIONS */}
-      {notifications.map(notif => (
-        <div key={notif.id} style={{
-          position: 'fixed', top: '100px', right: '2rem',
-          background: '#10b981', color: 'white', padding: '1rem 2rem',
-          borderRadius: '1rem', boxShadow: '0 10px 30px rgba(16,185,129,0.4)',
-          zIndex: 1000
-        }}>
-          {notif.message}
-        </div>
-      ))}
-
       {/* MAIN */}
       <main style={{ 
-  padding: '3rem 4rem',  // ✅ Increased side padding
-  minHeight: 'calc(100vh - 160px)',
-  maxWidth: '1600px',    // ✅ Center constraint
-  margin: '0 auto'       // ✅ Auto center
-}}>
-  <Outlet />
-</main>
+        padding: '3rem 4rem',
+        minHeight: 'calc(100vh - 160px)',
+        maxWidth: '1600px',
+        margin: '0 auto'
+      }}>
+        <Outlet />
+      </main>
 
-
+      {/* ✅ REACT TOASTIFY CONTAINER - REQUIRED FOR NOTIFICATIONS */}
+      <ToastContainer
+        position="top-right"
+        autoClose={4000}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+        style={{
+          fontSize: '1rem',
+          zIndex: 9999
+        }}
+      />
     </div>
   );
 };

@@ -18,9 +18,14 @@ const router = createBrowserRouter([
       { path: "search", element: <Search /> },     
       { path: "login", element: <Login /> },
       { path: "dashboard", element: <Dashboard /> },
-      { path: "signup", element: <SignUp /> },    // ✅ MOVED INSIDE!
+      { path: "signup", element: <SignUp /> },    
     ],
   },
-]);
+], {
+  future: {
+    v7_startTransition: true,
+    v7_fetcherPersist: true
+  }
+});
 
 export default router;
