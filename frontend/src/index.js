@@ -1,36 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { RouterProvider } from 'react-router-dom';
+import router from './routes';  // or './router'
+import { ContextProvider } from './context';  // ✅ WRAP HERE
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <App />,
-    children: [
-      {
-        path: "/",
-        element: <div>Home - Ecommerce Products</div>,
-      },
-      {
-        path: "/login",
-        element: <div>Login Page</div>,
-      },
-      {
-        path: "/signup",
-        element: <div>Sign Up Page</div>,
-      },
-    ],
-  },
-]);
-
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
+ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    {/* ✅ CRITICAL: ContextProvider MUST WRAP RouterProvider */}
+    <ContextProvider>
+      <RouterProvider router={router} />
+    </ContextProvider>
   </React.StrictMode>
 );
-
-reportWebVitals();

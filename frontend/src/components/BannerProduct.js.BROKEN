@@ -1,0 +1,68 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+
+const BannerProduct = () => {
+    return (
+        <section style={{
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            padding: '4rem 2rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: '500px',
+            position: 'relative',
+            overflow: 'hidden'
+        }}>
+            <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundImage: 'url(https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                filter: 'brightness(0.4)'
+            }}></div>
+            
+            <div style={{
+                position: 'relative',
+                zIndex: 2,
+                textAlign: 'center',
+                maxWidth: '800px',
+                color: 'white'
+            }}>
+                <h1 style={{
+                    fontSize: 'clamp(2.5rem, 5vw, 4rem)',
+                    fontWeight: '900',
+                    marginBottom: '1.5rem',
+                    textShadow: '0 10px 30px rgba(0,0,0,0.5)'
+                }}>
+                    Latest iPhone 16 Pro Max
+                </h1>
+                <p style={{
+                    fontSize: '1.5rem',
+                    marginBottom: '2rem',
+                    opacity: 0.9
+                }}>
+                    Starting at ₹1,19,900 - World's Best Camera
+                </p>
+                <Link to="/cart" style={{
+                    padding: '1.2rem 3rem',
+                    fontSize: '1.2rem',
+                    fontWeight: 'bold',
+                    background: 'linear-gradient(45deg, #10b981, #059669)',
+                    color: 'white',
+                    textDecoration: 'none',
+                    borderRadius: '2rem',
+                    boxShadow: '0 20px 40px rgba(16,185,129,0.4)',
+                    display: 'inline-block'
+                }}>
+                    Buy Now → 
+                </Link>
+            </div>
+        </section>
+    );
+};
+
+export default BannerProduct;

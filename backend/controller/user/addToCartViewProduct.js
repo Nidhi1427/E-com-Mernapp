@@ -1,26 +1,46 @@
-const addToCartModel = require("../../models/cartProduct")
+const addToCartModel = require("../../models/cartProduct");
 
-const addToCartViewProduct = async(req,res)=>{
+const addToCartController = async(req,res)=>{
     try{
-        const currentUser = req.userId
+        const { productId } = req?.body;
+        const currentUser = req.userId;
 
-        const allProduct = await addToCartModel.find({
-            userId : currentUser
-        }).populate("productId")
+        // ✅ FIXED: Check CURRENT user's cart only
+        const isProductAvailable = await addToCartModel.findOne({ 
+            productId, 
+            userId: currentUser 
+        });
 
-        res.json({
-            data : allProduct,
+        if(isProductAvailable){
+            return res.json({
+                message : "Already exists in cart",
+                success : false,
+                error : true
+            });
+        }
+
+        const payload = {
+            productId : productId,
+            quantity : 1,
+            userId : currentUser,
+        };
+
+        const newAddToCart = new addToCartModel(payload);
+        const saveProduct = await newAddToCart.save();
+
+        return res.json({
+            data : saveProduct,
+            message : "Product Added to Cart",
             success : true,
             error : false
-        })
-
+        });
     }catch(err){
         res.json({
-            message : err.message || err,
+            message : err?.message || err,
             error : true,
             success : false
-        })
+        });
     }
-}
+};
 
-module.exports =  addToCartViewProduct
+module.exports = addToCartController;

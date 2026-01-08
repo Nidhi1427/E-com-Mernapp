@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { FaRegEye } from "react-icons/fa";
-import { FaEyeSlash } from "react-icons/fa6";
-import { Link } from 'react-router-dom';
-import imageTobase64 from '../src/helpers/imageTobase64';
+import { FaRegEye, FaEyeSlash } from "react-icons/fa6";
+import { Link, useNavigate } from 'react-router-dom';
+import SummaryApi from '../common';
+import imageTobase64 from '../helpers/imageTobase64';
+import { toast } from 'react-toastify';
 
 export const SignUp = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
     
     const [data, setData] = useState({
         email: "",
@@ -15,12 +17,11 @@ export const SignUp = () => {
         confirmpassword: "",
         profilePic: ""
     });
+    const navigate = useNavigate();
 
     const handleuploadPic = async (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const imagePic = await imageTobase64(file);
-            console.log("imagePic", imagePic);
+        if (e.target.files && e.target.files[0]) {
+            const imagePic = await imageTobase64(e.target.files[0]);
             setData((prev) => ({
                 ...prev,
                 profilePic: imagePic
@@ -29,49 +30,71 @@ export const SignUp = () => {
     };
 
     const handleOnChange = (e) => {
-        const { name, value } = e.target;
         setData((prev) => ({
             ...prev,
-            [name]: value
+            [e.target.name]: e.target.value
         }));
     };
 
-    console.log("data signup", data);
-
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Form submitted:", data);
+        setLoading(true);
+
+        if (data.password !== data.confirmpassword) {
+            toast.error("Passwords don't match!");
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const response = await fetch(SummaryApi.signUP.url, {
+                method: SummaryApi.signUP.method,
+                headers: {
+                    "content-type": "application/json"
+                },
+                body: JSON.stringify(data)
+            });
+
+            const responseData = await response.json();
+
+            if (responseData.success) {
+                toast.success("Account created successfully!");
+                navigate("/login");
+            } else {
+                toast.error(responseData.message);
+            }
+        } catch (error) {
+            toast.error("Signup failed. Please try again.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        <section id='SignUp'>
+        <section id='SignUp' className='py-20'>
             <div className='mx-auto container p-4'>
-                <div className='bg-white p-5 py-5 w-full max-w-sm mx-auto'>
-                    <div className='w-20 h-20 mx-auto relative overflow-hidden rounded-full'>
+                <div className='bg-white p-5 py-10 w-full max-w-sm mx-auto rounded-lg shadow-xl'>
+                    <div className='w-24 h-24 mx-auto relative overflow-hidden rounded-full border-4 border-red-100'>
                         <img 
-                            src={data.profilePic || "https://via.placeholder.com/80"} 
+                            src={data.profilePic || "https://via.placeholder.com/100?text=GG"} 
                             alt='Profile' 
                             className='w-full h-full object-cover'
                         />
-                        <form>
-                            <label>
-                                <input 
-                                    type='file' 
-                                    className='hidden' 
-                                    onChange={handleuploadPic}
-                                    accept="image/*"
-                                />
-                            </label>
-                            <div className='text-xs bg-opacity-80 bg-slate-200 pb-4 pt-2 cursor-pointer text-center absolute bottom-0 w-full'>
-                                Upload Photo
-                            </div>
-                        </form>
+                        <label className='text-xs bg-red-100 text-red-600 pb-3 pt-2 cursor-pointer text-center absolute bottom-0 w-full hover:bg-red-200 transition-colors'>
+                            <input 
+                                type='file' 
+                                className='hidden' 
+                                onChange={handleuploadPic}
+                                accept="image/*"
+                            />
+                            📸 Upload Photo
+                        </label>
                     </div>
 
-                    <form className='pt-6 flex flex-col gap-2' onSubmit={handleSubmit}>
+                    <form className='pt-8 flex flex-col gap-4' onSubmit={handleSubmit}>
                         <div className='grid'>
-                            <label>Name:</label>
-                            <div className='bg-slate-100 p-2'>
+                            <label className='text-sm font-medium text-slate-700'>Name:</label>
+                            <div className='bg-slate-100 p-3 rounded-lg border'>
                                 <input 
                                     type='text' 
                                     placeholder='Enter your name' 
@@ -79,14 +102,14 @@ export const SignUp = () => {
                                     value={data.name} 
                                     onChange={handleOnChange} 
                                     required 
-                                    className='w-full h-full outline-none bg-transparent'
+                                    className='w-full h-full outline-none bg-transparent text-lg'
                                 />
                             </div>
                         </div>
 
                         <div className='grid'>
-                            <label>Email:</label>
-                            <div className='bg-slate-100 p-2'>
+                            <label className='text-sm font-medium text-slate-700'>Email:</label>
+                            <div className='bg-slate-100 p-3 rounded-lg border'>
                                 <input 
                                     type='email' 
                                     placeholder='Enter email' 
@@ -94,14 +117,14 @@ export const SignUp = () => {
                                     value={data.email} 
                                     onChange={handleOnChange} 
                                     required 
-                                    className='w-full h-full outline-none bg-transparent'
+                                    className='w-full h-full outline-none bg-transparent text-lg'
                                 />
                             </div>
                         </div>
 
                         <div>
-                            <label>Password:</label>
-                            <div className='bg-slate-100 p-2 flex items-center gap-2'>
+                            <label className='text-sm font-medium text-slate-700 block mb-1'>Password:</label>
+                            <div className='bg-slate-100 p-3 rounded-lg border flex items-center gap-3'>
                                 <input 
                                     type={showPassword ? "text" : 'password'} 
                                     placeholder='Enter password' 
@@ -109,10 +132,10 @@ export const SignUp = () => {
                                     value={data.password} 
                                     onChange={handleOnChange} 
                                     required 
-                                    className='w-full h-full outline-none bg-transparent'
+                                    className='w-full h-full outline-none bg-transparent text-lg'
                                 />
                                 <div 
-                                    className='cursor-pointer text-xl p-1' 
+                                    className='cursor-pointer text-xl p-1 hover:bg-slate-200 rounded-full transition-colors' 
                                     onClick={() => setShowPassword((prev) => !prev)}
                                 >
                                     {showPassword ? <FaEyeSlash /> : <FaRegEye />}
@@ -121,8 +144,8 @@ export const SignUp = () => {
                         </div>
 
                         <div>
-                            <label>Confirm Password:</label>
-                            <div className='bg-slate-100 p-2 flex items-center gap-2'>
+                            <label className='text-sm font-medium text-slate-700 block mb-1'>Confirm Password:</label>
+                            <div className='bg-slate-100 p-3 rounded-lg border flex items-center gap-3'>
                                 <input 
                                     type={showConfirmPassword ? "text" : 'password'} 
                                     placeholder='Confirm password' 
@@ -130,10 +153,10 @@ export const SignUp = () => {
                                     value={data.confirmpassword} 
                                     onChange={handleOnChange} 
                                     required 
-                                    className='w-full h-full outline-none bg-transparent'
+                                    className='w-full h-full outline-none bg-transparent text-lg'
                                 />
                                 <div 
-                                    className='cursor-pointer text-xl p-1' 
+                                    className='cursor-pointer text-xl p-1 hover:bg-slate-200 rounded-full transition-colors' 
                                     onClick={() => setShowConfirmPassword((prev) => !prev)}
                                 >
                                     {showConfirmPassword ? <FaEyeSlash /> : <FaRegEye />}
@@ -143,20 +166,23 @@ export const SignUp = () => {
 
                         <button 
                             type="submit"
-                            className='bg-black hover:bg-gray-800 text-white px-6 py-2 w-full max-w-[150px] rounded-full hover:scale-110 transition-all mx-auto block mt-6'
+                            disabled={loading}
+                            className='bg-red-600 hover:bg-red-700 text-white px-6 py-3 w-full rounded-full font-semibold text-lg transition-all duration-300 mx-auto block mt-4 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed'
                         >
-                            Sign up
+                            {loading ? "Creating Account..." : "Sign Up"}
                         </button>
                     </form>
                     
-                    <p className='my-5 text-center'>
+                    <p className='my-6 text-center text-slate-600'>
                         Already have account?{' '}
-                        <Link to="/login" className='text-red-600 hover:text-red-700 hover:underline'>
+                        <Link to="/login" className='text-red-600 hover:text-red-700 font-semibold hover:underline transition-all'>
                             Login
                         </Link>
                     </p>
                 </div>
             </div>
         </section>
-    );
+    ); 
 };
+
+export default SignUp;
